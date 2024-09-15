@@ -1,1 +1,2 @@
 ls,"Short for lists; displays the file and directory names in the current working directory."
+mkdir. "Short for make directory; creates a new directory (folder) with the specified name."
