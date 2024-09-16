@@ -161,14 +161,17 @@ class linkedList
             HDestroyList(this->head);
         }
 
+        //populator, fills the list out with the data input from the commands.csv input file stream. returns the size of the list
         int populateList(fstream& infile, C command, D definition)
         {
             int size = 0;
             while (!infile.eof())
             {
+                //reads the command and defintion through getline with a "," delimiter
                 getline(infile, command, ',');
                 getline(infile, definition);
 
+                //make a new node with the input data, increase size by 1
                 this->newNode(command, definition);
                 size++;
             }
