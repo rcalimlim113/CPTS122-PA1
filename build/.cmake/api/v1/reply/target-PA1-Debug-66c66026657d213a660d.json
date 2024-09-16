@@ -111,7 +111,7 @@
 		},
 		{
 			"backtrace" : 1,
-			"path" : "gameheader.hpp",
+			"path" : "matchgame.hpp",
 			"sourceGroupIndex" : 1
 		}
 	],

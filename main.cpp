@@ -2,11 +2,20 @@
 ADVANTAGES/DISADVANTAGES LINKED LIST
 ADVANTAGES/DISADVANTAGES ARRAY
 */
+
 #include <iostream>
 #include <string>
 using namespace std;
+
+#include "matchgame.hpp"
+
 int main()
 {
+    linkedList <string, string> commandList;
+    string comName, comDefinition;
+    fstream infile("commands.csv");
+    int size = commandList.populateList(infile, comName, comDefinition);
+
     string userName, newCommandToAdd, oldCommandTodelete;
     int selection;
     while (true)
