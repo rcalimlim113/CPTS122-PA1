@@ -66,20 +66,73 @@ void deleteCommand(linkedList<string,string> commandList)
 }
 
 //run game function for new players, calls the HRunGame helper function to actually run the game
-void runGame(linkedList<string,string> commandList, fstream& infile)
+void runGame(linkedList<string,string> commandList, fstream& infile, int size)
 {
 	return;
 }
 
 //overloaded run game function for returning players, calls the HRunGame helper function to actually run the game
-void runGame(userProfile player)
+void runGame(userProfile player, int size)
 {
 	return;
 }
 
 //run game helper function, actually runs the game. is called by the runGame overloaded function which will decide new or returning player & feed corresponding arguments to this helper function
-int HRunGame(node<string,string>* head, userProfile playerArray[], userProfile player, int index)
+int HRunGame(node<string,string>* head, userProfile playerArray[], userProfile player, int size)
 {
+	//3 index variables for the correct & incorrect answers, 1 int used to randomize the display order, and 1 used to store question count
+	int goodIndex, badIndex1, badIndex2, printOrder, qCount;
+	//array to store if a question has been asked yet
+	int qAsked[size];
+
+	//3 node pointers, 1 for each answer
+	node<string,string>* pGood = head;
+	node<string,string>* pBad1 = head;
+	node<string,string>* pBad2 = head;
+
+	//ask how many questions to have
+	cout << "How many matching questions would you like? There are currently \"" << size << "\" questions total." << endl;
+	cin >> qCount;
+
+	//loop until that many questions are given
+	int count = 0;
+	while (count < qCount)
+	{
+		//find 2 random bad answers
+		badIndex1 = rand() % size;
+		badIndex2 = rand() % size;
+
+		//find a good answer that is different, and hasn't been picked before
+		do 
+		{
+			goodIndex = rand() % size;
+		} while(goodIndex == badIndex1 || goodIndex == badIndex2 || qAsked[goodIndex] == -1);
+
+		//mark that question as picked for the rest of the game
+		qAsked[goodIndex] = -1;
+
+		//reset pointers to head each loop
+		pGood = head;
+		pBad1 = head;
+		pBad2 = head;
+
+		//set pointers to the correct nodes w/ for loops
+		for (int i =0; i< goodIndex; i++)
+		{
+			pGood = pGood->pNext;
+		}
+		for (int i =0; i< badIndex1; i++)
+		{
+			pBad1 = pBad1->pNext;
+		}
+		for (int i =0; i< badIndex2; i++)
+		{
+			pBad2 = pBad2->pNext;
+		}
+
+
+	}
+
 	return 0;
 }
 
@@ -187,9 +240,11 @@ void gameMenu()
 			}
 			case 3: //load previous game
 			{
+				//get player name
 				string name;
 				cout << "Please enter your name below:" << endl;
 				cin >> name;
+				//see if this user exists and open the game, or send them back to the main menu
 				userProfile player = findUser(playerArray, name);
 				if (player.username == name)
 				{
@@ -200,6 +255,7 @@ void gameMenu()
 				if (player.username == "NULL")
 				{
 					cout << "The profile \"" << name << "\" does not exist. Please select option 2 for a new game." << endl;
+					break;
 				}
 				break;
 			}

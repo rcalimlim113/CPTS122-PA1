@@ -96,7 +96,7 @@ class linkedList
             return tail;
         }
 
-        //new node function, takes 2 template arguyments for the command and it's definition, makes a node, and adds it to the list
+        //new node function, takes 2 template arguyments for the command and it's definition, makes a node, and adds it to the list (insertAtFront is built in)
         void newNode(C command, D definition)
         {
             //make new node & store input data
@@ -200,13 +200,13 @@ void newCommand(linkedList<string,string> commandList);
 void deleteCommand(linkedList<string,string> commandList);
 
 //run game function for new players, calls the HRunGame helper function to actually run the game
-void runGame(linkedList<string,string> commandList, fstream& infile);
+void runGame(linkedList<string,string> commandList, fstream& infile, int size);
 
 //overloaded run game function for returning players, calls the HRunGame helper function to actually run the game
-void runGame(userProfile player);
+void runGame(userProfile player, int size);
 
 //run game helper function, actually runs the game. is called by the runGame overloaded function which will decide new or returning player & feed corresponding arguments to this helper function
-int HRunGame(node<string,string>* head, userProfile playerArray[100], userProfile player, int index);
+int HRunGame(node<string,string>* head, userProfile playerArray[100], userProfile player, int size);
 
 //save data function, runs when the game is exited to save the new command list & player data to their respective .csv files
 void saveData(node<string,string>* head, userProfile playerArray[100]);
