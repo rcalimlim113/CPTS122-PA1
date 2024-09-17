@@ -21,6 +21,7 @@ using std::ifstream;
 using std::ofstream;
 using std::ostream;
 using std::getline;
+using std::stoi;
 
 //user profile struct, stores name & score
 struct userProfile
@@ -135,13 +136,17 @@ class linkedList
         //remove node function, finds the selected node and calls the destroy node helper function to destroy it without breaking the list
         void removeNode(C command)
         {
+            //make a temo node to hold head
             node<C,D>* temp = head;
+            //check the list isnt empty
             while (temp != nullptr)
             {
+                //find the command
                 if (temp->command != command)
                 {
                     temp = temp->pNext;
                 }
+                //once found, destroy it
                 else
                 {
                     HDestroyNode(temp);
@@ -178,3 +183,36 @@ class linkedList
             return size;
         }
 };
+
+//rules function, prints the game rules when called from the main menu
+void printRules();
+
+//populate profiles function, pulls user profile data from profiles.csv and populates the player array
+void populateUserProfiles(userProfile playerArray[100]);
+
+//find user function, checks to see if the given name has a profile, and if so, returns it. otherwise, returns a profile with a NULL name field
+userProfile findUser(userProfile playerArray[100], string name);
+
+//add command function, adds a new command to the linked list
+void newCommand(linkedList<string,string> commandList);
+
+//remove command function, deletes a command from the linked list
+void deleteCommand(linkedList<string,string> commandList);
+
+//run game function for new players, calls the HRunGame helper function to actually run the game
+void runGame(linkedList<string,string> commandList, fstream& infile);
+
+//overloaded run game function for returning players, calls the HRunGame helper function to actually run the game
+void runGame(userProfile player);
+
+//run game helper function, actually runs the game. is called by the runGame overloaded function which will decide new or returning player & feed corresponding arguments to this helper function
+int HRunGame(node<string,string>* head, userProfile playerArray[100], userProfile player, int index);
+
+//save data function, runs when the game is exited to save the new command list & player data to their respective .csv files
+void saveData(linkedList<string,string> commandList, userProfile playerArray[100]);
+
+//overloaded ofstream << operator to make it work with the struct data type userProfile
+ofstream& operator << (ofstream& lhs, userProfile& rhs);
+
+//game wrapper function, actually runs the program
+void gameMenu();
