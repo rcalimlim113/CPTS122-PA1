@@ -84,8 +84,51 @@ int HRunGame(node<string,string>* head, userProfile playerArray[], userProfile p
 }
 
 //save data function, runs when the game is exited to save the new command list & player data to their respective .csv files
-void saveData(linkedList<string,string> commandList, userProfile playerArray[])
+void saveData(node<string,string>* head, userProfile playerArray[])
 {
+	//opens commands.csv
+	fstream outfilecommand("commands.csv");
+	//temp node to traverse the linked list
+	node<string,string>* pCur = head;
+	//check file was opened correctly
+	if (!outfilecommand)
+	{
+		cout << "Error opening commands.csv" << endl;
+		return;
+	} 
+	//loop through list & output to file
+	while (pCur!=nullptr)
+	{
+		outfilecommand << pCur->command << "," << pCur->definition << "\n";
+		
+		cout << pCur->command << "," << pCur->definition << "\n";
+		pCur = pCur->pNext;
+	}
+	//close file & return
+	outfilecommand.close();
+
+	//opens profiles.csv
+	fstream outfileprofile("profiles.csv");
+	//check file was opened correctly
+	if (!outfileprofile)
+	{
+		cout << "Error opening profiles.csv" << endl;
+		return;
+	} 
+	//loop through array & output to file
+	for (int i = 0; i < 100; i++)
+	{
+		outfileprofile << playerArray[i].username << "," << playerArray[i].score << "\n";
+		cout << playerArray[i].username << "," << playerArray[i].score << "\n";
+		if (playerArray[i].username == "")
+		{
+			i = 10000;
+		}
+	}
+	//close file & return
+	outfileprofile.close();
+
+	cout << "save data success";
 	return;
 }
 
@@ -178,7 +221,7 @@ void gameMenu()
 			case 6: //exit game
 			{
 				//save data to .csv files
-				//saveData(commandList, playerArray);
+				saveData(commandList.getHead(), playerArray);
 				//this is how I break the double do-while loop
 				option = 100;
 				break;

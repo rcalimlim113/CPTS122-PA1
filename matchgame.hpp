@@ -209,7 +209,7 @@ void runGame(userProfile player);
 int HRunGame(node<string,string>* head, userProfile playerArray[100], userProfile player, int index);
 
 //save data function, runs when the game is exited to save the new command list & player data to their respective .csv files
-void saveData(linkedList<string,string> commandList, userProfile playerArray[100]);
+void saveData(node<string,string>* head, userProfile playerArray[100]);
 
 //overloaded ofstream << operator to make it work with the struct data type userProfile
 ofstream& operator << (ofstream& lhs, userProfile& rhs);
