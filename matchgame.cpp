@@ -120,6 +120,7 @@ void saveData(node<string,string>* head, userProfile playerArray[])
 	{
 		outfileprofile << playerArray[i].username << "," << playerArray[i].score << "\n";
 		cout << playerArray[i].username << "," << playerArray[i].score << "\n";
+		//if the array still has cells to go, but they are empty, break the for loop(array has 100 cells, they might not all be full. dont want to loop a bunch unnecesarrily)
 		if (playerArray[i].username == "")
 		{
 			i = 10000;
@@ -128,14 +129,8 @@ void saveData(node<string,string>* head, userProfile playerArray[])
 	//close file & return
 	outfileprofile.close();
 
-	cout << "save data success";
+	//cout << "save data success";
 	return;
-}
-
-//overloaded ofstream << operator to make it work with the struct data type userProfile
-ofstream& operator << (ofstream& lhs, userProfile& rhs)
-{
-	return lhs;
 }
 
 void gameMenu()
