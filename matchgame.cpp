@@ -37,36 +37,18 @@ void populateUserProfiles(userProfile playerArray[])
 //find user function, checks to see if the given name has a profile, and if so, returns it. otherwise, returns a profile with a NULL name field
 userProfile findUser(userProfile playerArray[100], string name)
 {
-	//count variable to go through array
-	int count = 0;
 	//temp profile, set name to NULL
 	userProfile tempProfile;
 	tempProfile.username = "NULL";
-	//check if that name is the first one
-	if (playerArray[count].username == name)
+	for (int i = 0; i < 100; i++)
 	{
-		tempProfile = playerArray[count];
-		return tempProfile;
-	}
-	//go through array until name is found
-	while (playerArray[count].username != name)
-	{
-		count++;
-		//once its found set temp profile as that name's profile
-		if (playerArray[count].username == name)
+		if (playerArray[i].username == name)
 		{
-			tempProfile = playerArray[count];
-			return tempProfile;
-		}
-		//count = 100, this name is not in the profile array (100 cells, 0-99)
-		if (count = 100)
-		{
-			cout << "This name is not stored already, you will make to start a new game (Main Menu Option 2).";
-			return tempProfile;
+			tempProfile = playerArray[i];
 		}
 	}
-	
-	
+
+
 	//return the profile
 	return tempProfile;
 }
@@ -132,8 +114,8 @@ void gameMenu()
 	//testing the player array was populated correctly
 	cout << playerArray[0].username<<endl;
 	cout << playerArray[0].score <<endl;
-	cout << playerArray[1].username<<endl;
-	cout << playerArray[1].score <<endl;
+	cout << playerArray[2].username<<endl;
+	cout << playerArray[2].score <<endl;
 
 	//double do-while loop to keep players in the menu/game until they exit
 	do
