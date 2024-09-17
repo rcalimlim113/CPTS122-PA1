@@ -40,15 +40,15 @@ userProfile findUser(userProfile playerArray[100], string name)
 	//temp profile, set name to NULL
 	userProfile tempProfile;
 	tempProfile.username = "NULL";
+	//look through array with a for loop
 	for (int i = 0; i < 100; i++)
 	{
+		//if the profile is found, have it replace the temp profile
 		if (playerArray[i].username == name)
 		{
 			tempProfile = playerArray[i];
 		}
 	}
-
-
 	//return the profile
 	return tempProfile;
 }
