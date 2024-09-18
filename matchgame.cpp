@@ -35,7 +35,7 @@ void populateUserProfiles(userProfile playerArray[])
 }
 
 //find user function, checks to see if the given name has a profile, and if so, returns it. otherwise, returns a profile with a NULL name field
-userProfile findUser(userProfile playerArray[100], string name)
+int findUser(userProfile playerArray[100], string name)
 {
 	//temp profile, set name to NULL
 	userProfile tempProfile;
@@ -43,14 +43,14 @@ userProfile findUser(userProfile playerArray[100], string name)
 	//look through array with a for loop
 	for (int i = 0; i < 100; i++)
 	{
-		//if the profile is found, have it replace the temp profile
+		//if the profile is found, return its location in the array
 		if (playerArray[i].username == name)
 		{
-			tempProfile = playerArray[i];
+			return i;
 		}
 	}
 	//return the profile
-	return tempProfile;
+	return -1;
 }
 
 //add command function, adds a new command to the linked list
@@ -66,56 +66,57 @@ void deleteCommand(linkedList<string,string> commandList)
 }
 
 //run game function for new players, calls the HRunGame helper function to actually run the game
-void runGame(linkedList<string,string> commandList, fstream& infile, int size)
+void runGame(node<string,string>* head, userProfile playerArray[100], int size)
 {
 	return;
 }
 
 //overloaded run game function for returning players, calls the HRunGame helper function to actually run the game
-void runGame(userProfile player, int size)
+void runGame(node<string,string>* head, int arrayPosition, userProfile playerArray[100], int size)
 {
+	//variables to store new score and iterate through player array
+	int newScore = 0, count =0;
+	//run the game, get the new score
+	newScore = HRunGame(head, playerArray[arrayPosition], size);
+	cout << "Your current score is now: \"" << newScore << "\"" <<endl;
+	playerArray[arrayPosition].score = newScore;
 	return;
 }
 
 //run game helper function, actually runs the game. is called by the runGame overloaded function which will decide new or returning player & feed corresponding arguments to this helper function
-int HRunGame(node<string,string>* head, userProfile playerArray[], userProfile player, int size)
+int HRunGame(node<string,string>* head, userProfile player, int size)
 {
 	//3 index variables for the correct & incorrect answers, 1 int used to randomize the display order, and 1 used to store question count
-	int goodIndex, badIndex1, badIndex2, printOrder, qCount;
+	int goodIndex, badIndex1, badIndex2, printOrder, qCount, qAnswer;
 	//array to store if a question has been asked yet
 	int qAsked[size];
-
 	//3 node pointers, 1 for each answer
 	node<string,string>* pGood = head;
 	node<string,string>* pBad1 = head;
 	node<string,string>* pBad2 = head;
-
 	//ask how many questions to have
 	cout << "How many matching questions would you like? There are currently \"" << size << "\" questions total." << endl;
 	cin >> qCount;
-
 	//loop until that many questions are given
-	int count = 0;
-	while (count < qCount)
+	for (int count = 0; count < qCount; count++)
 	{
+		//set answer order randomizer & player answer fields to 0 to start
+		printOrder = 0;
+		qAnswer = 0;
 		//find 2 random bad answers
 		badIndex1 = rand() % size;
 		badIndex2 = rand() % size;
-
 		//find a good answer that is different, and hasn't been picked before
 		do 
 		{
 			goodIndex = rand() % size;
 		} while(goodIndex == badIndex1 || goodIndex == badIndex2 || qAsked[goodIndex] == -1);
-
 		//mark that question as picked for the rest of the game
 		qAsked[goodIndex] = -1;
-
 		//reset pointers to head each loop
 		pGood = head;
 		pBad1 = head;
 		pBad2 = head;
-
 		//set pointers to the correct nodes w/ for loops
 		for (int i =0; i< goodIndex; i++)
 		{
@@ -129,11 +130,53 @@ int HRunGame(node<string,string>* head, userProfile playerArray[], userProfile p
 		{
 			pBad2 = pBad2->pNext;
 		}
-
-
+		//randomize the order the answer are printed
+		printOrder = rand() % 3 + 1;
+		cout << "What is the definition of the command \"" << pGood->command << "\"?\n";
+		//correct answer on top
+		if (printOrder == 1)
+		{
+			cout << " 1) \"" << pGood->definition << "\"\n";
+			cout << " 2) \"" << pBad1->definition << "\"\n";
+			cout << " 3) \"" << pBad2->definition << "\"\n";			
+		}
+		//correct answer in the middle
+		if (printOrder == 2)
+		{
+			cout << " 1) \"" << pBad1->definition << "\"\n";
+			cout << " 2) \"" << pGood->definition << "\"\n";
+			cout << " 3) \"" << pBad2->definition << "\"\n";	
+		}
+		//correct answer on the bottom
+		if (printOrder == 3)
+		{
+			cout << " 1) \"" << pBad1->definition << "\"\n";
+			cout << " 2) \"" << pBad2->definition << "\"\n";
+			cout << " 3) \"" << pGood->definition << "\"\n";
+		}
+		//get their answer
+		cout << "Please enter your selection below (1, 2, or 3):\n" << endl;
+		cin >> qAnswer;
+		//answer is correct
+		if (qAnswer == printOrder)
+		{
+			cout <<"DING!! Correct!! 1 Point will be added to your score.\n";
+			player.score++;
+			cout <<"Your current score is now:\"" << player.score << "\" Points.\n";
+			cout << "Please enter any key to continue" << endl;
+			cin >> qAnswer;
+		}
+		//answer is incorrect
+		else
+		{
+			cout <<"BZZZZT!! I'm sorry, that is incorrect. 1 Point will be deducted from your score.\n";
+			player.score--;
+			cout <<"Your current score is now:\"" << player.score << "\" Points.\n";
+			cout << "Please enter any key to continue" << endl;
+			cin >> qAnswer;
+		}
 	}
-
-	return 0;
+	return player.score;
 }
 
 //save data function, runs when the game is exited to save the new command list & player data to their respective .csv files
@@ -245,11 +288,13 @@ void gameMenu()
 				cout << "Please enter your name below:" << endl;
 				cin >> name;
 				//see if this user exists and open the game, or send them back to the main menu
-				userProfile player = findUser(playerArray, name);
-				if (player.username == name)
+				int arrayPosition;
+				arrayPosition = findUser(playerArray, name);
+				if (playerArray[arrayPosition].username == name)
 				{
-					cout << "The profile \"" << player.username << "\" has \"" << player.score << "\" points." << endl;
-					//play game with player argument
+					cout << "The profile \"" << playerArray[arrayPosition].username << "\" has \"" << playerArray[arrayPosition].score << "\" points." << endl;
+					runGame(commandList.getHead(), arrayPosition, playerArray, size);
+					break;
 					
 				}
 				if (player.username == "NULL")

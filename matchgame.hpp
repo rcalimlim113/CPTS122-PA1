@@ -191,7 +191,7 @@ void printRules();
 void populateUserProfiles(userProfile playerArray[100]);
 
 //find user function, checks to see if the given name has a profile, and if so, returns it. otherwise, returns a profile with a NULL name field
-userProfile findUser(userProfile playerArray[100], string name);
+int findUser(userProfile playerArray[100], string name);
 
 //add command function, adds a new command to the linked list
 void newCommand(linkedList<string,string> commandList);
@@ -200,13 +200,13 @@ void newCommand(linkedList<string,string> commandList);
 void deleteCommand(linkedList<string,string> commandList);
 
 //run game function for new players, calls the HRunGame helper function to actually run the game
-void runGame(linkedList<string,string> commandList, fstream& infile, int size);
+void runGame(node<string,string>* head, userProfile playerArray[100], int size);
 
 //overloaded run game function for returning players, calls the HRunGame helper function to actually run the game
-void runGame(userProfile player, int size);
+void runGame(node<string,string>* head, int arrayPosition, userProfile playerArray[100], int size);
 
 //run game helper function, actually runs the game. is called by the runGame overloaded function which will decide new or returning player & feed corresponding arguments to this helper function
-int HRunGame(node<string,string>* head, userProfile playerArray[100], userProfile player, int size);
+int HRunGame(node<string,string>* head, userProfile player, int size);
 
 //save data function, runs when the game is exited to save the new command list & player data to their respective .csv files
 void saveData(node<string,string>* head, userProfile playerArray[100]);
