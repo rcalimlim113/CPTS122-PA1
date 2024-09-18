@@ -51,15 +51,51 @@ int findUser(userProfile playerArray[100], string name)
 }
 
 //add command function, adds a new command to the linked list
-void newCommand(linkedList<string,string> commandList)
+void newCommand(linkedList<string,string>& commandList)
 {
-	return;
+	string newCommand, newDescription, confirm;
+	cout << "Please enter the command you wish to add below:"<< endl;
+	cin.ignore();
+	getline(cin, newCommand);
+	cout << "Please enter the description of this command below:"<< endl;
+	getline(cin, newDescription);
+	//put quotations around the description
+	newDescription = "\"" + newDescription + "\"";
+	cout << "You wish to add the command \"" << newCommand << "\" with the description " << newDescription << " correct?\nPlease enter \"Y\" to confirm." << endl;
+	cin >> confirm;
+	if (confirm == "y" || confirm == "Y")
+	{
+		commandList.newNode(newCommand, newDescription);
+		cout << "The command \"" << newCommand << "\" has been added." << endl;
+		return;
+	}
+	else
+	{
+		cout << "The command \"" << newCommand << "\" will not be added." << endl;
+		return;
+	}
 }
 
 //remove command function, deletes a command from the linked list
-void deleteCommand(linkedList<string,string> commandList)
+void deleteCommand(linkedList<string,string>& commandList)
 {
-	return;
+	string oldCommand, confirm;
+	cout << "Please enter the command you wish to delete below:"<< endl;
+	cin.ignore();
+	getline(cin, oldCommand);
+	cout << "Please enter \"Y\" to confirm that the command \"" << oldCommand << "\" should be deleted." << endl;
+	cin >> confirm;
+	if (confirm == "y" || confirm == "Y")
+	{
+		commandList.removeNode(oldCommand);
+		cout << "The command \"" << oldCommand << "\" has been deleted." << endl;
+		return;
+	}
+	else
+	{
+		cout << "The command \"" << oldCommand << "\" will not be deleted." << endl;
+		return;
+	}
 }
 
 //run game function for new players, calls the HRunGame helper function to actually run the game
@@ -213,7 +249,7 @@ int HRunGame(node<string,string>* head, userProfile player, int size)
 void saveData(node<string,string>* head, userProfile playerArray[])
 {
 	//opens commands.csv
-	fstream outfilecommand("commands.csv");
+	ofstream outfilecommand("commands.csv");
 	//temp node to traverse the linked list
 	node<string,string>* pCur = head;
 	//check file was opened correctly
@@ -225,7 +261,7 @@ void saveData(node<string,string>* head, userProfile playerArray[])
 	//loop through list & output to file
 	while (pCur!=nullptr)
 	{
-		outfilecommand << pCur->command << "," << pCur->definition << "\n";
+		outfilecommand << pCur->command << "," << pCur->definition << endl;
 		
 		cout << pCur->command << "," << pCur->definition << "\n";
 		pCur = pCur->pNext;
@@ -234,7 +270,7 @@ void saveData(node<string,string>* head, userProfile playerArray[])
 	outfilecommand.close();
 
 	//opens profiles.csv
-	fstream outfileprofile("profiles.csv");
+	ofstream outfileprofile("profiles.csv");
 	//check file was opened correctly
 	if (!outfileprofile)
 	{
@@ -244,17 +280,21 @@ void saveData(node<string,string>* head, userProfile playerArray[])
 	//loop through array & output to file
 	for (int i = 0; i < 100; i++)
 	{
-		outfileprofile << playerArray[i].username << "," << playerArray[i].score << "\n";
+		outfileprofile << playerArray[i].username << "," << playerArray[i].score << endl;
 		cout << playerArray[i].username << "," << playerArray[i].score << "\n";
-		//if the array still has cells to go, but they are empty, break the for loop(array has 100 cells, they might not all be full. dont want to loop a bunch unnecesarrily)
-		if (playerArray[i].username == "")
+		//if the array still has cells to go, but they are empty, break the for loop (array has 100 cells, they might not all be full. dont want to loop a bunch unnecesarrily)
+		if (playerArray[i].username.empty())
 		{
 			i = 10000;
-		}
+			//close file & return
+			outfileprofile.close();
+			//cout << "save data success";
+			return;
+		} 
 	}
+	//in case the for loop didnt break correctly
 	//close file & return
 	outfileprofile.close();
-
 	//cout << "save data success";
 	return;
 }
@@ -286,6 +326,10 @@ void gameMenu()
 	{
 		do
 		{
+			//clearing cin (i was getting errors with stuff messing up my menu after leaving a different area like adding commands)
+			//this does mean when you first run the executable (./main/PA1) you have to click enter once before the menu appears
+			cin.clear();
+			cin.ignore(100000, '\n');
 			//main menu do-while loop, can only leave with an answer between 1-6
 			cout << "Welcome to Ryan's Linux Command Matching Game!\n";
 			cout << "Please select an option below\n";
@@ -340,12 +384,14 @@ void gameMenu()
 			}
 			case 4: //add command
 			{
-				//newCommand(commandList);
+				newCommand(commandList);
+				size++;
 				break;
 			}
 			case 5: //remove command
 			{
-				//deleteCommand(commandList);
+				deleteCommand(commandList);
+				size--;
 				break;
 			}
 			case 6: //exit game

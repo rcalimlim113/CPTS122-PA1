@@ -69,9 +69,12 @@ class linkedList
                 pLast = pCur;
                 pCur = pCur->pNext;
             }
-            //delete the node, pLast maintains the list be storing the last node & the node after the deleted one
-            pLast->pNext = pCur->pNext;
-            delete pCur;
+            if (pCur == temp)
+            {
+                //delete the node, pLast maintains the list be storing the last node & the node after the deleted one
+                pLast->pNext = pCur->pNext;
+                delete pCur;
+            }
             return;
         }
 
@@ -108,28 +111,23 @@ class linkedList
             //if linked list is empty, make the new node the head node 
             if(head == NULL)
             {
+                //check temp was actually made
                 if(temp != nullptr)
                 {
-                    temp->pNext = head;
                     head = temp;
+                    tail = temp;
                 }
             }
             //otherwise add the node to the end
             else
             {
-                //list has 1 entry, the head. tail is null atm and must be populated
-                if (head->pNext==nullptr)
-                {
-                    temp->pNext = tail;
-                    tail = temp;
-                    head->pNext = temp;
-                }
-                //there is a tail, make it point to the new node and then make the new node the tail
-                else
+                //check temp was actually made
+                if(temp != nullptr)
                 {
                     tail->pNext = temp;
-                    tail = tail->pNext;
+                    tail = temp;
                 }
+
             }
         }
 
@@ -141,15 +139,23 @@ class linkedList
             //check the list isnt empty
             while (temp != nullptr)
             {
-                //find the command
-                if (temp->command != command)
+                //if the command is head of the list
+                if (head->command == command)
+                {
+                    head = head->pNext;
+                    HDestroyNode(temp);
+                    return;
+                }
+                //otherwise, find the command
+                while (temp->command != command)
                 {
                     temp = temp->pNext;
                 }
                 //once found, destroy it
-                else
+                if (temp->command == command)
                 {
                     HDestroyNode(temp);
+                    return;
                 }
             }
         }
@@ -194,10 +200,10 @@ void populateUserProfiles(userProfile playerArray[100]);
 int findUser(userProfile playerArray[100], string name);
 
 //add command function, adds a new command to the linked list
-void newCommand(linkedList<string,string> commandList);
+void newCommand(linkedList<string,string>& commandList);
 
 //remove command function, deletes a command from the linked list
-void deleteCommand(linkedList<string,string> commandList);
+void deleteCommand(linkedList<string,string>& commandList);
 
 //run game function for new players, calls the HRunGame helper function to actually run the game
 void runGame(node<string,string>* head, userProfile playerArray[100], int size);
