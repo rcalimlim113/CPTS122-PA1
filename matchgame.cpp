@@ -37,9 +37,6 @@ void populateUserProfiles(userProfile playerArray[])
 //find user function, checks to see if the given name has a profile, and if so, returns it. otherwise, returns a profile with a NULL name field
 int findUser(userProfile playerArray[100], string name)
 {
-	//temp profile, set name to NULL
-	userProfile tempProfile;
-	tempProfile.username = "NULL";
 	//look through array with a for loop
 	for (int i = 0; i < 100; i++)
 	{
@@ -49,7 +46,7 @@ int findUser(userProfile playerArray[100], string name)
 			return i;
 		}
 	}
-	//return the profile
+	//otherwise return -1
 	return -1;
 }
 
@@ -68,14 +65,47 @@ void deleteCommand(linkedList<string,string> commandList)
 //run game function for new players, calls the HRunGame helper function to actually run the game
 void runGame(node<string,string>* head, userProfile playerArray[100], int size)
 {
+	//variable to store score
+	int score = 0;
+	//int for find user function if user already exists
+	int returningPlayer = 0;
+	//get the new player's name
+	string name;
+	cout <<"What enter your name? (First Only)"<<endl;
+	cin >> name;
+	//is player already exists, send em to the main menu
+	returningPlayer = findUser(playerArray, name);
+	if (returningPlayer != -1)
+	{
+		cout <<"An account under the name \"" << name << "\" already exists. Please select load game (Option 3) from the main menu." << endl;
+		return;
+	}
+	//make sure you dont exceed the array
+	int arrayPosition = 0;
+	for(int i = 0; i < 100; i++)
+	{
+		//get to an open spot in the player array, make a new profile there
+		if (playerArray[i].username.empty())
+		{
+			playerArray[i].username = name;
+			playerArray[i].score = 0;
+			arrayPosition = i;
+			//exit the for loop
+			i = 1000;
+		}
+	}
+	//run game, store score to array
+	score = HRunGame(head, playerArray[arrayPosition], size);
+	cout << "Your current score is now: \"" << score << "\"" <<endl;
+	playerArray[arrayPosition].score = score;
 	return;
 }
 
 //overloaded run game function for returning players, calls the HRunGame helper function to actually run the game
 void runGame(node<string,string>* head, int arrayPosition, userProfile playerArray[100], int size)
 {
-	//variables to store new score and iterate through player array
-	int newScore = 0, count =0;
+	//variable to store new score
+	int newScore = 0;
 	//run the game, get the new score
 	newScore = HRunGame(head, playerArray[arrayPosition], size);
 	cout << "Your current score is now: \"" << newScore << "\"" <<endl;
@@ -246,16 +276,17 @@ void gameMenu()
     int option = 0;
 
 	//testing the player array was populated correctly
-	cout << playerArray[0].username<<endl;
-	cout << playerArray[0].score <<endl;
-	cout << playerArray[2].username<<endl;
-	cout << playerArray[2].score <<endl;
+	//cout << playerArray[0].username<<endl;
+	//cout << playerArray[0].score <<endl;
+	//cout << playerArray[2].username<<endl;
+	//cout << playerArray[2].score <<endl;
 
 	//double do-while loop to keep players in the menu/game until they exit
 	do
 	{
 		do
 		{
+			//main menu do-while loop, can only leave with an answer between 1-6
 			cout << "Welcome to Ryan's Linux Command Matching Game!\n";
 			cout << "Please select an option below\n";
 			cout << "1 Game Rules\n2 Play Game\n3 Load Previous game\n4 Add Command\n5 Remove Command\n6 Exit Game\n";
@@ -268,6 +299,7 @@ void gameMenu()
 			}
 		} while (option < 1 || option > 6);
 
+		//main menu switch case
 		switch (option)
 		{
 
@@ -278,7 +310,8 @@ void gameMenu()
 			}
 			case 2: //play game 
 			{
-				//play game with no player argument (new game)
+				//play game (new user version)
+				runGame(commandList.getHead(), playerArray, size);
 				break;
 			}
 			case 3: //load previous game
@@ -293,11 +326,12 @@ void gameMenu()
 				if (playerArray[arrayPosition].username == name)
 				{
 					cout << "The profile \"" << playerArray[arrayPosition].username << "\" has \"" << playerArray[arrayPosition].score << "\" points." << endl;
+					//run game (returning user version)
 					runGame(commandList.getHead(), arrayPosition, playerArray, size);
 					break;
 					
 				}
-				if (player.username == "NULL")
+				if (arrayPosition == -1)
 				{
 					cout << "The profile \"" << name << "\" does not exist. Please select option 2 for a new game." << endl;
 					break;
@@ -322,14 +356,11 @@ void gameMenu()
 				option = 100;
 				break;
 			}
-
 		}
-
 		//if the exit option is slected, then the double do-while loop is broken
 		if (option == 100)
 		{
 			return;
 		}
-
 	} while (option > 0 || option < 7);
 }
