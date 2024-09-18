@@ -53,14 +53,35 @@ int findUser(userProfile playerArray[100], string name)
 //add command function, adds a new command to the linked list
 void newCommand(linkedList<string,string>& commandList)
 {
+	//gets new command
 	string newCommand, newDescription, confirm;
 	cout << "Please enter the command you wish to add below:"<< endl;
 	cin.ignore();
 	getline(cin, newCommand);
+	//check if its in the list already
+	node<string,string>* temp = commandList.getHead();
+	while (temp->command != newCommand)
+	{
+		if (temp->command != newCommand)
+		{
+			temp = temp->pNext;
+		}
+		//command already exists, kick em back to the menu
+		if (temp->command == newCommand)
+		{
+			cout << "That command is already in the command list. Press enter to return to the main menu." << endl;
+			return;
+		}
+		if (temp->pNext == NULL)
+		{
+			break;
+		}
+	}
 	cout << "Please enter the description of this command below:"<< endl;
 	getline(cin, newDescription);
 	//put quotations around the description
 	newDescription = "\"" + newDescription + "\"";
+	//confirm their changes
 	cout << "You wish to add the command \"" << newCommand << "\" with the description " << newDescription << " correct?\nPlease enter \"Y\" to confirm." << endl;
 	cin >> confirm;
 	if (confirm == "y" || confirm == "Y")
@@ -79,10 +100,31 @@ void newCommand(linkedList<string,string>& commandList)
 //remove command function, deletes a command from the linked list
 void deleteCommand(linkedList<string,string>& commandList)
 {
+	//ask what command to delete
 	string oldCommand, confirm;
 	cout << "Please enter the command you wish to delete below:"<< endl;
 	cin.ignore();
 	getline(cin, oldCommand);
+	//check the command exists
+	node<string,string>* temp = commandList.getHead();
+	while (temp->command != oldCommand)
+	{
+		if (temp->command != oldCommand)
+		{
+			temp = temp->pNext;
+		}
+		if (temp->command == oldCommand)
+		{
+			break;
+		}
+		//command doesn't exist, kick em back to the menu
+		if (temp->pNext == NULL)
+		{
+			cout << "That command is not in the command list. Press enter to return to the main menu." << endl;
+			return;
+		}
+	}
+	//confirm their changes
 	cout << "Please enter \"Y\" to confirm that the command \"" << oldCommand << "\" should be deleted." << endl;
 	cin >> confirm;
 	if (confirm == "y" || confirm == "Y")
@@ -310,17 +352,9 @@ void gameMenu()
 	//adding the commands and profiles from their .csvs to their linked list/array
 	populateUserProfiles(playerArray);
     int size = commandList.populateList(infile, comName, comDefinition);
-
 	//main menu selection stuff
     string selection;
     int option = 0;
-
-	//testing the player array was populated correctly
-	//cout << playerArray[0].username<<endl;
-	//cout << playerArray[0].score <<endl;
-	//cout << playerArray[2].username<<endl;
-	//cout << playerArray[2].score <<endl;
-
 	//double do-while loop to keep players in the menu/game until they exit
 	do
 	{
@@ -373,7 +407,6 @@ void gameMenu()
 					//run game (returning user version)
 					runGame(commandList.getHead(), arrayPosition, playerArray, size);
 					break;
-					
 				}
 				if (arrayPosition == -1)
 				{
